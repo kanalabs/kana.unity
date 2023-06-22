@@ -1,0 +1,21 @@
+
+{
+  "name": "com.kanalabs.wallet.package",
+  "displayName": "Kanalabs wallet package",
+  "version": "1.0.0",
+  "description": "Pacakge to connect to kanalabs walllet",
+  "dependencies": {},
+  "homepage": "https://github.com/kanalabs/kana.unity",
+  "bugs": {
+    "url": "https://github.com/kanalabs/kana.unity/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://github.com/kanalabs/kana.unity.git"
+  },
+  "license": "Kanalabs",
+  "author": "Saravanan RadhaKrishnan",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
