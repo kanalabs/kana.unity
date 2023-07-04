@@ -24,12 +24,12 @@ public class KanalabsGraphQL
     }
 
 
-    public async Task<decimal> GetAccountBalance(string account, int chainId)
+    public async Task<decimal> GetAccountBalance(string account, int chainId, List<string> tokens)
     {
         var request = new GraphQLRequest
         {
-            Query = @"query  ( $chainId: Int! , $account: String!) {
-                            accountBalances(chainId: $chainId, account: $account) {
+            Query = @"query  ( $chainId: Int! , $account: String!, $tokens: [String!]) {
+                            accountBalances(chainId: $chainId, account: $account, tokens: $tokens) {
                             items {
                               balance
                               token
@@ -39,16 +39,23 @@ public class KanalabsGraphQL
             Variables = new
             {
                 chainId,
-                account
+                account,
+                tokens
             }
-        };
+        }; 
 
         var graphQLResponse = await graphQLClient.SendQueryAsync<AccountBalanceResponse>(request);
-        var accountBalance = graphQLResponse.Data.AccountBalances.Items.FirstOrDefault();
-        Debug.Log("Account Balance : " + accountBalance.Balance);
-        var balanceAmount = Helpers.ConvertHexToDecimal(accountBalance.Balance);
-        Debug.Log("Balance Amount : " + balanceAmount);
-        return balanceAmount;
+        
+        if(graphQLResponse.Data != null && graphQLResponse.Data.AccountBalances.Items.Any())
+        {
+            var accountBalance = graphQLResponse.Data.AccountBalances.Items.FirstOrDefault();
+            Debug.Log("Account Balance : " + accountBalance.Balance);
+            var balanceAmount = Helpers.ConvertHexToDecimal(accountBalance.Balance);
+            Debug.Log("Balance Amount : " + balanceAmount);
+            return balanceAmount;
+        }
+
+        return 0;       
     }
 
 

@@ -268,6 +268,7 @@ MonoBehaviour:
   SmartAddressText: {fileID: 1334192355}
   AccountBalanceText: {fileID: 1641794568}
   TestPrivateKey: 00b8335300169914a00364ff99b9ed1222940fde4c35a5c5aad96fea07fcb35a
+  Tokens: 0x92334318fb7f002c2ca3a6a146250133108f462b
 --- !u!1 &41947946
 GameObject:
   m_ObjectHideFlags: 0
