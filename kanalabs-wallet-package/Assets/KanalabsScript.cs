@@ -30,7 +30,7 @@ public class KanalabsScript : MonoBehaviour
     public InputField SmartAddressText;
     public InputField AccountBalanceText;
     public string TestPrivateKey;
-    public string Tokens;
+    public string Token;
 
     Web3Auth web3Auth;
     KanalabsGraphQL graphQL;
@@ -98,21 +98,11 @@ public class KanalabsScript : MonoBehaviour
         PublicAddressText.text = address;
         var smartAddress = SmartContract.GetSmartAddress(address);
         SmartAddressText.text = smartAddress;
-        var balanceAmount = await graphQL.GetAccountBalance(smartAddress, chainId, GetTokens()); 
+        
+        var balanceAmount = await graphQL.GetAccountBalance(address, chainId, Token); 
         AccountBalanceText.text = balanceAmount.ToString();
     }
-
-    private List<string> GetTokens()
-    {
-        var tokensList = new List<string>();
-        if (!string.IsNullOrEmpty(Tokens))
-        {
-            tokensList = Tokens.Split(",").ToList();
-        }
-
-        return tokensList;
-    }
- 
+     
 
     // Start is called before the first frame update
     void Start()

@@ -3,6 +3,7 @@ using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using GraphQL.Client.Abstractions.Websocket;
 using System;
+using System.Numerics;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +24,24 @@ public class KanalabsGraphQL
         graphQLClient = new GraphQLHttpClient(httpClientOption, new NewtonsoftJsonSerializer());
     }
 
+    public async Task<decimal> GetAccountBalance(string account, int chainId, string token)
+    {
+        var accountBalances = await GetAccountBalance(account, chainId, new List<string> { token });
 
-    public async Task<decimal> GetAccountBalance(string account, int chainId, List<string> tokens)
+        var accountBalance = accountBalances.Where(i => i.Token == token).FirstOrDefault();
+        if(accountBalance != null)
+        {
+            Debug.Log("Account Balance : " + accountBalance.Balance);
+            var balanceAmount = Helpers.ConvertHexToDecimal(accountBalance.Balance);
+            Debug.Log("Balance Amount : " + balanceAmount);
+            return balanceAmount;
+        }
+
+        return 0;
+    }
+
+
+    public async Task<List<AccountBalance>> GetAccountBalance(string account, int chainId, List<string> tokens)
     {
         var request = new GraphQLRequest
         {
@@ -48,14 +65,10 @@ public class KanalabsGraphQL
         
         if(graphQLResponse.Data != null && graphQLResponse.Data.AccountBalances.Items.Any())
         {
-            var accountBalance = graphQLResponse.Data.AccountBalances.Items.FirstOrDefault();
-            Debug.Log("Account Balance : " + accountBalance.Balance);
-            var balanceAmount = Helpers.ConvertHexToDecimal(accountBalance.Balance);
-            Debug.Log("Balance Amount : " + balanceAmount);
-            return balanceAmount;
+            return graphQLResponse.Data.AccountBalances.Items;
         }
 
-        return 0;       
+        return null;       
     }
 
 
