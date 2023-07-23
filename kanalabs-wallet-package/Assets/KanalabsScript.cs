@@ -25,10 +25,12 @@ public class KanalabsScript : MonoBehaviour
     LoginProviders loginProvider;
      
     public Button LoginButton;
+    public Button DeployContractButton;
     public InputField WelcomeText;
     public InputField PublicAddressText;
     public InputField SmartAddressText;
     public InputField AccountBalanceText;
+    public InputField AccountDeployedText;
     public string TestPrivateKey;
     public string Token;
 
@@ -43,7 +45,9 @@ public class KanalabsScript : MonoBehaviour
         graphQL = new KanalabsGraphQL(etherspotEndpoint);
 
         LoginButton.onClick.AddListener(InitializeWeb3Auth);
-         
+
+        DeployContractButton.onClick.AddListener(DeployContract);
+
         LoadAccountDetails(TestPrivateKey);
 
         Debug.Log("Cubescript Initialized"); 
@@ -69,10 +73,29 @@ public class KanalabsScript : MonoBehaviour
         Debug.Log("Web3Auth logged in");
     }
 
+    public async void DeployContract()
+    {
+        Debug.Log("Deploying contract");
+        string privateKey = TestPrivateKey;
+        var smartAddress = SmartAddressText.text;
+        var chainId = (int)chain;
+
+        var accountResponse = await graphQL.GetAccount(chainId, smartAddress);
+        Debug.Log($"Account response {accountResponse.Account?.State}");
+
+        if (accountResponse.Account?.State != "Deployed")
+        {
+            Debug.Log("Deploy contract initiated!");
+            SmartContract.DeployContract(privateKey, chainId, smartAddress);
+            Debug.Log("Deploy contract completed!");
+        }
+    }
+
     private void onLogin(Web3AuthResponse response)
     {
         var privateKey = response.privKey;
         Debug.Log($"Private key:{privateKey}");
+        TestPrivateKey = privateKey;
         LoadAccountDetails(privateKey);
 
         var userInfo = JsonConvert.SerializeObject(response.userInfo, Formatting.Indented);        
@@ -101,6 +124,11 @@ public class KanalabsScript : MonoBehaviour
         
         var balanceAmount = await graphQL.GetAccountBalance(address, chainId, Token); 
         AccountBalanceText.text = balanceAmount.ToString();
+
+        var accountResponse = await graphQL.GetAccount(chainId, smartAddress);
+        var accountDeployed = accountResponse.Account?.State == "Deployed" ? "Yes": "No";
+        Debug.Log($"Account Deployed: {accountDeployed}");
+        AccountDeployedText.text = accountDeployed;
     }
      
 

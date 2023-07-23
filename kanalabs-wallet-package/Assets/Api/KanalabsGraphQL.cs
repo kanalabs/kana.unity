@@ -72,7 +72,26 @@ public class KanalabsGraphQL
     }
 
 
+    public async Task<AccountResponse> GetAccount(int chainId, string account)
+    {
+        var request = new GraphQLRequest
+        {
+            Query = @"query  ( $chainId: Int! , $account: String!) {
+                            account(chainId: $chainId, account: $account) {
+                                address
+                                type
+                                state
+                          }
+                        }",
+            Variables = new
+            {
+                chainId,
+                account
+            }
+        };
 
-
+        var graphQLResponse = await graphQLClient.SendQueryAsync<AccountResponse>(request);
+        return graphQLResponse.Data;
+    }
 
 }
